@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="UTF-8">
+	<!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+	<title>Document</title>
+	<style>
+		#container {
+			width: 1100px;
+		}
+		input {
+			padding: 7px 10px;
+			border: 1px solid #ccc;
+			border-radius: 3px;
+			background: #fff;
+		}
+		input + span {
+			margin-left: 10px;
+			color: #e54141
+		}
+		pre {
+			padding: 10px;
+			background: #efefef;
+			border-radius: 10px;
+		}
+	</style>
+	<script src="./mi.validate.js"></script>
+</head>
+<body>
+	<h1>Validate 샘플</h1>
+	<hr>
+	<div id="container"></div>
+
+	<script>
+		const validateGroup = ["isValCheck", "isSpaceCheck", "isSpaceDelete", "isLangCheck", "isLangOnly", "isLangOnlyType", "isLangOnlyTypeDelete", "isNumComma", "isNumCommaDelete", "isLengMin", "isLengMax", "isEmailCheck", "isMemNumCheck", "isMemBirth", "isTelFrCheck", "isTelHyphen", "isInsuranceAge", "isConsonantCheck", "isBrowerCheck"];
+
+		const container = document.querySelector('#container');
+
+		validateGroup.forEach(function(e, i) {
+			container.insertAdjacentHTML('beforeend',
+				'<h2>' + e + '</h2>' +
+				'<pre>' + miValidate[e] + '</pre>' +
+				'<input type="text" class="' + e + '"><span></span>'
+			);
+		});
+
+		// Check류 validation
+		const checkValidateGroup = validateGroup.filter(function(e) {
+			return e.indexOf("Check") > -1 && e.indexOf("Lang") == -1 && e.indexOf("Brower") == -1;
+		});
+		checkValidateGroup.forEach(function(e) {
+			document.querySelector('.' + e).addEventListener('keyup', function() {
+				if(this.value) {
+					this.nextSibling.innerHTML = miValidate[e](this.value);
+				} else {
+					this.nextSibling.innerHTML = ""
+				}
+			});
+		});
+
+		// isSpaceDelete
+		document.querySelector('.isSpaceDelete').addEventListener('keyup', function() {
+			if(this.value) {
+				this.value = miValidate.isSpaceDelete(this.value);
+			}
+		});
+
+		// Lang validation
+		const langValidateGroup = validateGroup.filter(function(e) {
+			return e.indexOf("Lang") > -1;
+		});
+		langValidateGroup.forEach(function(e) {
+			document.querySelector('.' + e).addEventListener('keyup', function() {
+				if(this.value) {
+					this.nextSibling.innerHTML = miValidate[e](this.value, "KR");
+				} else {
+					this.nextSibling.innerHTML = ""
+				}
+			});
+		});
+
+		// isNumComma
+		document.querySelector('.isNumComma').addEventListener('keyup', function() {
+			if(this.value) {
+				this.value = miValidate.isNumComma(this.value);
+			}
+		});
+
+		// isNumCommaDelete
+		document.querySelector('.isNumCommaDelete').addEventListener('keyup', function() {
+			if(this.value) {
+				this.value = miValidate.isNumCommaDelete(this.value);
+			}
+		});
+
+		// isLengMin
+		document.querySelector('.isLengMin').addEventListener('keyup', function() {
+			if(this.value) {
+				this.nextSibling.innerHTML = miValidate.isLengMin(this.value, 3);
+			}
+		});
+
+		// isLengMax
+		document.querySelector('.isLengMax').addEventListener('keyup', function() {
+			if(this.value) {
+				this.nextSibling.innerHTML = miValidate.isLengMax(this.value, 3);
+			}
+		});
+
+		// isMemBirth
+		document.querySelector('.isMemBirth').nextSibling.innerHTML = "Object값이므로 console에서 확인";
+		console.log(miValidate.isMemBirth({
+			nowDate: new Date().getFullYear(),
+			strBirth: "891101",
+			gender: "M"
+		}));
+
+		// isTelHyphen
+		document.querySelector('.isTelHyphen').nextSibling.innerHTML = "keyup하면 오류 data 한번에 넣어야함";
+		document.querySelector('.isTelHyphen').addEventListener('keyup', function() {
+			if(this.value) {
+				this.value = miValidate.isTelHyphen(this.value);
+			}
+		});
+
+		// isInsuranceAge
+		const isInsuranceAge = miValidate.isInsuranceAge({
+			strDate : "2020-04-20"
+			,memBirth:"1989-11-01"
+		});
+		document.querySelector('.isInsuranceAge').nextSibling.innerHTML = isInsuranceAge;
+
+		// isBrowerCheck
+		document.querySelector('.isBrowerCheck').nextSibling.innerHTML = miValidate.isBrowerCheck();
+	</script>
+</body>
+</html>
